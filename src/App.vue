@@ -4,14 +4,9 @@
     <v-main>
       <v-container class="fill-height" fluid>
         <v-row align="center" justify="center">
-          <v-col cols="12" md="8">
-            <v-card class="pa-4" color="primary" dark>
-              <v-card-title>TricTrac (Vuetify Shell)</v-card-title>
-              <v-card-text>
-                Vuetify is now configured! 🎉<br />
-                In the next step, we’ll scaffold our board component and begin laying out the TricTrac grid.
-              </v-card-text>
-            </v-card>
+          <v-col cols="12" md="10">
+            <!-- Render our Board component here -->
+            <Board />
           </v-col>
         </v-row>
       </v-container>
@@ -21,12 +16,16 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+import Board from './components/Board.vue';
 
 export default defineComponent({
   name: 'App',
+  components: {
+    Board,
+  },
 });
 </script>
 
 <style scoped>
-/* App‐level scoped styles if needed */
+/* (You can remove any previous styles you had for the card.) */
 </style>
