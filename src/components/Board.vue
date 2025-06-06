@@ -2,7 +2,7 @@
   <div class="board-wrapper">
     <!-- === Black’s Bar (top of the board) === -->
     <div class="bar-zone bar-black">
-      <Checker color="black" :count="15"/>
+      <Checker color="black" :count="boardState.bar.black"/>
     </div>
 
     <!-- === The 24‐point Board === -->
@@ -16,7 +16,14 @@
             :index="24 - (n - 1)"
             :color="(n % 2 === 1) ? 'dark' : 'light'"
             :isTop="true"
-        />
+        >
+          <!-- If any checkers are on this point, render them -->
+          <Checker
+              v-if="boardState.points[24 - (n - 1)].count > 0"
+              :color="boardState.points[24 - (n - 1)].color!"
+              :count="boardState.points[24 - (n - 1)].count"
+          />
+        </Point>
       </div>
 
       <!-- Middle bar label (spacer) -->
@@ -33,25 +40,37 @@
             :index="n"
             :color="(n % 2 === 1) ? 'light' : 'dark'"
             :isTop="false"
-        />
+        >
+          <!-- If any checkers are on this point, render them -->
+          <Checker
+              v-if="boardState.points[n].count > 0"
+              :color="boardState.points[n].color!"
+              :count="boardState.points[n].count"
+          />
+        </Point>
       </div>
     </div>
 
     <!-- === White’s Bar (bottom of the board) === -->
     <div class="bar-zone bar-white">
-      <Checker color="white" :count="15"/>
+      <Checker color="white" :count="boardState.bar.white" />
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import {defineComponent} from 'vue';
+import { defineComponent } from 'vue';
 import Point from './Point.vue';
 import Checker from './Checker.vue';
+import { useBoard, Color } from '../composables/useBoard';
 
 export default defineComponent({
   name: 'Board',
-  components: {Point, Checker},
+  components: { Point, Checker },
+  setup() {
+    const { boardState, enterFromBar } = useBoard();
+    return { boardState, enterFromBar };
+  },
 });
 </script>
 
