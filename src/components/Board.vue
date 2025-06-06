@@ -1,57 +1,103 @@
 <template>
   <div class="board-wrapper">
-    <!-- === Black’s Bar (top of the board) === -->
+    <!-- Black’s bar (top) -->
     <div class="bar-zone bar-black">
-      <Checker color="black" :count="boardState.bar.black"/>
+      <Checker color="black" :count="boardState.bar.black" />
     </div>
 
-    <!-- === The 24‐point Board === -->
+    <!-- Main board container -->
     <div class="board-container">
-      <!-- Top row: points 24 → 13 -->
+      <!-- Top row split into two halves + fold bar -->
       <div class="points-row top-row">
-        <!-- 24, 23, …, 13 -->
-        <Point
-            v-for="n in 12"
-            :key="n"
-            :index="24 - (n - 1)"
-            :color="(n % 2 === 1) ? 'dark' : 'light'"
-            :isTop="true"
-        >
-          <!-- If any checkers are on this point, render them -->
-          <Checker
-              v-if="boardState.points[24 - (n - 1)].count > 0"
-              :color="boardState.points[24 - (n - 1)].color!"
-              :count="boardState.points[24 - (n - 1)].count"
-          />
-        </Point>
+        <!-- Left half: points 24 → 19 -->
+        <div class="points-half left">
+          <Point
+              v-for="n in 6"
+              :key="n"
+              :index="24 - (n - 1)"
+              :color="(n % 2 === 1) ? 'dark' : 'light'"
+              :isTop="true"
+          >
+            <Checker
+                v-if="boardState.points[24 - (n - 1)].count > 0"
+                :color="boardState.points[24 - (n - 1)].color!"
+                :count="boardState.points[24 - (n - 1)].count"
+            />
+          </Point>
+        </div>
+
+        <!-- Vertical fold bar with 8px padding each side -->
+        <div class="vertical-bar-wrapper">
+          <div class="vertical-bar"></div>
+        </div>
+
+        <!-- Right half: points 18 → 13 -->
+        <div class="points-half right">
+          <Point
+              v-for="n in 6"
+              :key="n"
+              :index="18 - (n - 1)"
+              :color="(n % 2 === 1) ? 'light' : 'dark'"
+              :isTop="true"
+          >
+            <Checker
+                v-if="boardState.points[18 - (n - 1)].count > 0"
+                :color="boardState.points[18 - (n - 1)].color!"
+                :count="boardState.points[18 - (n - 1)].count"
+            />
+          </Point>
+        </div>
       </div>
 
-      <!-- Middle bar label (spacer) -->
+      <!-- Middle bar strip -->
       <div class="middle-bar">
         <span>BAR</span>
       </div>
 
-      <!-- Bottom row: points 1 → 12 -->
+      <!-- Bottom row split into two halves + fold bar -->
       <div class="points-row bottom-row">
-        <!-- 1, 2, …, 12 -->
-        <Point
-            v-for="n in 12"
-            :key="n"
-            :index="n"
-            :color="(n % 2 === 1) ? 'light' : 'dark'"
-            :isTop="false"
-        >
-          <!-- If any checkers are on this point, render them -->
-          <Checker
-              v-if="boardState.points[n].count > 0"
-              :color="boardState.points[n].color!"
-              :count="boardState.points[n].count"
-          />
-        </Point>
+        <!-- Left half: points 1 → 6 -->
+        <div class="points-half left">
+          <Point
+              v-for="n in 6"
+              :key="n"
+              :index="n"
+              :color="(n % 2 === 1) ? 'light' : 'dark'"
+              :isTop="false"
+          >
+            <Checker
+                v-if="boardState.points[n].count > 0"
+                :color="boardState.points[n].color!"
+                :count="boardState.points[n].count"
+            />
+          </Point>
+        </div>
+
+        <!-- Vertical fold bar with 8px padding each side -->
+        <div class="vertical-bar-wrapper">
+          <div class="vertical-bar"></div>
+        </div>
+
+        <!-- Right half: points 7 → 12 -->
+        <div class="points-half right">
+          <Point
+              v-for="n in 6"
+              :key="n"
+              :index="n + 6"
+              :color="(n % 2 === 1) ? 'dark' : 'light'"
+              :isTop="false"
+          >
+            <Checker
+                v-if="boardState.points[n + 6].count > 0"
+                :color="boardState.points[n + 6].color!"
+                :count="boardState.points[n + 6].count"
+            />
+          </Point>
+        </div>
       </div>
     </div>
 
-    <!-- === White’s Bar (bottom of the board) === -->
+    <!-- White’s bar (bottom) -->
     <div class="bar-zone bar-white">
       <Checker color="white" :count="boardState.bar.white" />
     </div>
@@ -62,7 +108,7 @@
 import { defineComponent } from 'vue';
 import Point from './Point.vue';
 import Checker from './Checker.vue';
-import { useBoard, Color } from '../composables/useBoard';
+import { useBoard } from '../composables/useBoard';
 
 export default defineComponent({
   name: 'Board',
@@ -75,61 +121,93 @@ export default defineComponent({
 </script>
 
 <style scoped>
-/*
-  .board-wrapper holds the two bars (top & bottom) plus the main board.
-  We use flex-direction: column so everything stacks vertically.
-*/
+/* === Board Wrapper (unchanged) === */
 .board-wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* If you want some spacing between bars & board, you can adjust below */
   gap: 16px;
   width: 100%;
 }
 
-/*
-  bar-zone: Each bar is a small container “above” or “below” the board.
-  We give it a fixed height that’s equal to Checker’s total height (84px),
-  plus we center the Checker horizontally.
-*/
+/* === Bar Zones (unchanged) === */
 .bar-zone {
   position: relative;
   width: 100%;
-  height: 100px; /* 84px for stack + a bit of breathing room */
+  height: 100px;
   display: flex;
   justify-content: center;
 }
-
-/* Color the bar’s background differently if you like */
 .bar-black {
   background-color: #eeeeee;
 }
-
 .bar-white {
   background-color: #ffffff;
 }
 
-/* === Existing board‐container styles === */
+/* === Main Board Container (with inset vertical fold‐line) === */
 .board-container {
+  position: relative;  /* allow ::before to be positioned inside */
+
   display: grid;
   grid-template-rows: auto 30px auto;
   row-gap: 8px;
   padding: 16px;
   width: 100%;
   max-width: 100%;
-  background-color: #f5deb3;
-  border: 2px solid #8d6e63;
+  margin: 0 auto;
+
+  background-color: #f5deb3;   /* wheat */
+  border: 2px solid #8d6e63;   /* brown border */
   border-radius: 8px;
 }
 
-.points-row {
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  column-gap: 4px;
+/* Inset the fold‐line by 16px so it never overlaps the board’s padding */
+.board-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(50% - 2px);
+  width: 6px;
+  background-color: #8d6e63;
+  z-index: 0;
 }
 
+.points-row {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+}
+
+.points-half {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  column-gap: 4px;
+  flex: 1;
+}
+
+.vertical-bar-wrapper {
+  display: flex;
+  align-items: stretch;
+  padding: 0 8px; /* 8px on each side of the 4px bar */
+}
+
+.vertical-bar {
+  width: 4px;
+  background-color: #8d6e63;
+  flex: 0 0 4px;
+}
+
+.points-half > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* Ensure the horizontal “BAR” is above the vertical line */
 .middle-bar {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: center;
