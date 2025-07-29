@@ -1,4 +1,3 @@
-<!-- src/components/Checker.vue -->
 <template>
   <div class="checker-stack">
     <!-- If count ≤ 5, render exactly `count` circles -->

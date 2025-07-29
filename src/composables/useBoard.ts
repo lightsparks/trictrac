@@ -110,14 +110,77 @@ function enterFromBar(player: Color, pointIndex: number): boolean {
 }
 
 /**
- * (Future) You’ll add other move functions here, e.g. moveWithinBoard, bearOff, etc.
+ * Compute destination index for a move of length `pip`:
+ * - White moves “up” the point numbers: fromIndex + pip
+ * - Black moves “down”: fromIndex - pip
+ * Returns null if destination would be beyond 1..24 (i.e. a bear‐off, handled later).
  */
+function computeDestination(player: Color, fromIndex: number, pip: number): number | null {
+    if (player === 'white') {
+        const dest = fromIndex + pip;
+        return dest <= 24 ? dest : null;
+    } else {
+        const dest = fromIndex - pip;
+        return dest >= 1 ? dest : null;
+    }
+}
 
-/** Expose state as readonly plus our action */
+/**
+ * Move a checker on the board by `pip` spaces.
+ * Returns true if succeeded, false if move was illegal (no checker there, blocked, etc.).
+ */
+function moveChecker(player: Color, fromIndex: number, pip: number): boolean {
+    const src = state.points[fromIndex as keyof typeof state.points];
+    // 1) Must have a checker of this player at source
+    if (!src.color || src.color !== player || src.count <= 0) {
+        return false;
+    }
+
+    // 2) Compute the destination
+    const destIndex = computeDestination(player, fromIndex, pip);
+    if (destIndex === null) {
+        // We’ll handle bearing‐off in a later ticket
+        return false;
+    }
+    const dest = state.points[destIndex as keyof typeof state.points];
+
+    // 3) Blocked? 2+ enemy checkers
+    if (dest.color && dest.color !== player && dest.count >= 2) {
+        return false;
+    }
+
+    // 4) Perform the move:
+    //   a) Remove one from source
+    src.count--;
+    if (src.count === 0) src.color = null;
+
+    //   b) If exactly one enemy, “hit” it back to its bar
+    if (dest.color && dest.color !== player && dest.count === 1) {
+        const enemy = dest.color;
+        state.bar[enemy]++;
+        // place ours
+        dest.color = player;
+        dest.count = 1;
+    } else {
+        // empty or same‐color stacking
+        if (dest.count === 0) {
+            dest.color = player;
+            dest.count = 1;
+        } else {
+            dest.count++;
+        }
+    }
+
+    return true;
+}
+
+
 export function useBoard() {
     return {
         boardState: readonly(state) as BoardState,
         enterFromBar,
-        // later we’ll add moveWithinBoard, bearOff, resetBoard, etc.
+        computeDestination,
+        moveChecker,
+        // … future actions …
     };
 }

@@ -54,7 +54,7 @@
         <span>BAR</span>
       </div>
 
-      <!-- Bottom row split into two halves + fold bar -->
+      <!-- Bottom row -->
       <div class="points-row bottom-row">
         <!-- Left half: points 1 → 6 -->
         <div class="points-half left">
@@ -73,7 +73,7 @@
           </Point>
         </div>
 
-        <!-- Vertical fold bar with 8px padding each side -->
+        <!-- Vertical fold bar -->
         <div class="vertical-bar-wrapper">
           <div class="vertical-bar"></div>
         </div>
@@ -121,7 +121,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
-/* === Board Wrapper (unchanged) === */
+/* === Board Wrapper === */
 .board-wrapper {
   display: flex;
   flex-direction: column;
@@ -130,7 +130,7 @@ export default defineComponent({
   width: 100%;
 }
 
-/* === Bar Zones (unchanged) === */
+/* === Bar Zones === */
 .bar-zone {
   position: relative;
   width: 100%;
@@ -145,10 +145,9 @@ export default defineComponent({
   background-color: #ffffff;
 }
 
-/* === Main Board Container (with inset vertical fold‐line) === */
+/* === Main Board Container === */
 .board-container {
-  position: relative;  /* allow ::before to be positioned inside */
-
+  position: relative;
   display: grid;
   grid-template-rows: auto 30px auto;
   row-gap: 8px;
@@ -157,12 +156,11 @@ export default defineComponent({
   max-width: 100%;
   margin: 0 auto;
 
-  background-color: #f5deb3;   /* wheat */
-  border: 2px solid #8d6e63;   /* brown border */
+  background-color: #f5deb3;
+  border: 2px solid #8d6e63;
   border-radius: 8px;
 }
 
-/* Inset the fold‐line by 16px so it never overlaps the board’s padding */
 .board-container::before {
   content: "";
   position: absolute;
@@ -190,7 +188,7 @@ export default defineComponent({
 .vertical-bar-wrapper {
   display: flex;
   align-items: stretch;
-  padding: 0 8px; /* 8px on each side of the 4px bar */
+  padding: 0 8px;
 }
 
 .vertical-bar {
@@ -204,7 +202,6 @@ export default defineComponent({
   z-index: 2;
 }
 
-/* Ensure the horizontal “BAR” is above the vertical line */
 .middle-bar {
   position: relative;
   z-index: 1;
